@@ -10,14 +10,23 @@ type Product = {
   category: string;
 };
 
+type Order = {
+  id: string;
+  date: string;
+  items: Product[];
+  total: number;
+};
+
 type ContextType = {
   cart: Product[];
   favorites: Product[];
+  orders: Order[];
   toggleCart: (product: Product) => void;
   toggleFavorite: (product: Product) => void;
   isInCart: (id: string) => boolean;
   isFavorite: (id: string) => boolean;
-  clearCart: () => void; // ✅ NEW
+  clearCart: () => void;
+  placeOrder: () => void;
 };
 
 const CartFavContext = createContext<ContextType | undefined>(undefined);
@@ -25,19 +34,23 @@ const CartFavContext = createContext<ContextType | undefined>(undefined);
 const STORAGE_KEYS = {
   cart: 'myapp_cart',
   favorites: 'myapp_favorites',
+  orders: 'myapp_orders',
 };
 
 export const CartFavProvider = ({ children }: { children: React.ReactNode }) => {
   const [cart, setCart] = useState<Product[]>([]);
   const [favorites, setFavorites] = useState<Product[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
 
   // Load from localStorage on mount
   useEffect(() => {
     const storedCart = localStorage.getItem(STORAGE_KEYS.cart);
     const storedFavorites = localStorage.getItem(STORAGE_KEYS.favorites);
+    const storedOrders = localStorage.getItem(STORAGE_KEYS.orders);
 
     if (storedCart) setCart(JSON.parse(storedCart));
     if (storedFavorites) setFavorites(JSON.parse(storedFavorites));
+    if (storedOrders) setOrders(JSON.parse(storedOrders));
   }, []);
 
   // Sync cart to localStorage
@@ -49,6 +62,11 @@ export const CartFavProvider = ({ children }: { children: React.ReactNode }) => 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.favorites, JSON.stringify(favorites));
   }, [favorites]);
+
+  // Sync orders to localStorage
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.orders, JSON.stringify(orders));
+  }, [orders]);
 
   const toggleCart = (product: Product) => {
     setCart((prev) =>
@@ -71,12 +89,37 @@ export const CartFavProvider = ({ children }: { children: React.ReactNode }) => 
 
   const clearCart = () => {
     setCart([]);
-    localStorage.removeItem(STORAGE_KEYS.cart); // ✅ optional, to also clean up localStorage immediately
+    localStorage.removeItem(STORAGE_KEYS.cart);
+  };
+
+  const placeOrder = () => {
+    if (cart.length === 0) return;
+
+    const total = cart.reduce((sum, item) => sum + parseFloat(item.price), 0);
+    const newOrder: Order = {
+      id: Date.now().toString(),
+      date: new Date().toISOString(),
+      items: [...cart],
+      total,
+    };
+
+    setOrders((prev) => [...prev, newOrder]);
+    clearCart();
   };
 
   return (
     <CartFavContext.Provider
-      value={{ cart, favorites, toggleCart, toggleFavorite, isInCart, isFavorite, clearCart }}
+      value={{
+        cart,
+        favorites,
+        orders,
+        toggleCart,
+        toggleFavorite,
+        isInCart,
+        isFavorite,
+        clearCart,
+        placeOrder,
+      }}
     >
       {children}
     </CartFavContext.Provider>

@@ -45,7 +45,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-[#004744] text-white py-12 px-6 md:px-12">
+    <footer className="bg-[#004744] text-white py-12 px-6 md:px-12 mt-8">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Column 1: Brand & Socials */}
         <motion.div

@@ -2,7 +2,12 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import {
+  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from 'firebase/auth';
+import { FcGoogle } from 'react-icons/fc';
 import { auth } from '@/app/lib/firebase';
 import { createUserProfile } from '@/app/lib/createUserProfile';
 
@@ -13,27 +18,44 @@ export default function SignUpPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
+  // Email/password sign up
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
     try {
-      // 1. Create user with email and password
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // 2. Create user profile document in Firestore
       await createUserProfile(user);
 
-      // 3. Redirect user to home or profile page
       router.push('/');
     } catch (err: any) {
-      // Show error message
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Google sign-in handler
+  const handleGoogleSignIn = async () => {
+    setError(null);
+    setGoogleLoading(true);
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      await createUserProfile(user);
+
+      router.push('/');
+    } catch (err: any) {
+      setError(err.message || 'Failed to sign in with Google');
+    } finally {
+      setGoogleLoading(false);
     }
   };
 
@@ -64,7 +86,7 @@ export default function SignUpPage() {
 
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || googleLoading}
           className={`w-full bg-[#004744] text-white font-semibold py-2 rounded-md hover:bg-[#003a38] transition ${
             loading ? 'opacity-60 cursor-not-allowed' : ''
           }`}
@@ -72,6 +94,22 @@ export default function SignUpPage() {
           {loading ? 'Signing Up...' : 'Sign Up'}
         </button>
       </form>
+
+      <div className="flex items-center my-6">
+        <hr className="flex-grow border-t border-gray-300" />
+        <span className="mx-3 text-gray-500 font-semibold">OR</span>
+        <hr className="flex-grow border-t border-gray-300" />
+      </div>
+
+      <button
+        type="button"
+        onClick={handleGoogleSignIn}
+        disabled={loading || googleLoading}
+        className={`w-full flex items-center justify-center space-x-3 rounded-md border border-gray-300 bg-white py-2 font-semibold text-gray-700 shadow-sm transition hover:shadow-md hover:bg-gray-50 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed`}
+      >
+        <FcGoogle size={24} />
+        <span>{googleLoading ? 'Signing Up...' : 'Sign up with Google'}</span>
+      </button>
     </div>
   );
 }

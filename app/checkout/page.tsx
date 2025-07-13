@@ -4,11 +4,11 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 function parsePrice(priceStr: string): number {
-  return parseInt(priceStr.replace(/[^\d]/g, ''), 10);
+  return parseFloat(priceStr.replace(/[^\d.]/g, '')); // fixed to parse decimals properly
 }
 
 export default function CheckoutPage() {
-  const { cart, clearCart } = useCartFav();  // <-- get clearCart here
+  const { cart, placeOrder } = useCartFav();  // <-- get placeOrder here
   const [billingName, setBillingName] = useState('');
   const [address, setAddress] = useState('');
   const [paymentType, setPaymentType] = useState('card');
@@ -22,10 +22,11 @@ export default function CheckoutPage() {
       alert('Please fill in both your name and address.');
       return;
     }
+
     setTimeout(() => {
-      clearCart();  // <-- clear cart here on successful payment
+      placeOrder();  // <-- save order and clear cart
       setPaid(true);
-    }, 1000); // simulate payment
+    }, 1000); // simulate payment delay
   };
 
   if (paid) {
@@ -58,7 +59,7 @@ export default function CheckoutPage() {
           </div>
         ))}
         <div className="text-right font-semibold text-lg mt-4">
-          Total: ${totalPrice.toLocaleString()}
+          Total: ₹{totalPrice.toFixed(2)}
         </div>
       </div>
 

@@ -1,12 +1,20 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
-import Link from 'next/link';
-import { FiHeart, FiShoppingCart, FiMenu, FiX, FiUser, FiBox, FiLogOut } from 'react-icons/fi';
-import { motion, AnimatePresence } from 'framer-motion';
-import useAuth from '@/app/hooks/useAuth'; // Your custom hook to get user
-import { signOut } from 'firebase/auth';
-import { auth } from '@/app/lib/firebase';
+import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
+import {
+  FiHeart,
+  FiShoppingCart,
+  FiMenu,
+  FiX,
+  FiUser,
+  FiBox,
+  FiLogOut,
+} from "react-icons/fi";
+import { motion, AnimatePresence } from "framer-motion";
+import useAuth from "@/app/hooks/useAuth"; // Your custom hook to get user
+import { signOut } from "firebase/auth";
+import { auth } from "@/app/lib/firebase";
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -14,10 +22,10 @@ export default function Navbar() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const navLinks = [
-    { label: 'Home', href: '/' },
-    { label: 'Shop', href: '/shop' },
-    { label: 'About Us', href: '/about' },
-    { label: 'Contact Us', href: '/contactus' },
+    { label: "Home", href: "/" },
+    { label: "Shop", href: "/shop" },
+    { label: "About Us", href: "/about" },
+    { label: "Contact Us", href: "/contactus" },
   ];
 
   const { user, loading } = useAuth();
@@ -32,8 +40,8 @@ export default function Navbar() {
         setDropdownOpen(false);
       }
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleLogout = async () => {
@@ -41,7 +49,7 @@ export default function Navbar() {
       await signOut(auth);
       setDropdownOpen(false);
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error("Logout failed:", error);
     }
   };
 
@@ -77,7 +85,12 @@ export default function Navbar() {
           {/* Right Side Icons */}
           <div className="flex items-center gap-4">
             {/* Favorite Icon with Link */}
-            <Link href="/favorites" aria-label="Favorites" passHref legacyBehavior>
+            <Link
+              href="/favorites"
+              aria-label="Favorites"
+              passHref
+              legacyBehavior
+            >
               <motion.a
                 whileTap={{ scale: 0.8 }}
                 whileHover={{ scale: 1.1 }}
@@ -99,14 +112,14 @@ export default function Navbar() {
             </Link>
 
             {/* USER AVATAR or LOGIN BUTTON */}
-            {!loading && (
-              user ? (
+            {!loading &&
+              (user ? (
                 <div className="relative" ref={dropdownRef}>
                   <motion.img
                     whileHover={{ scale: 1.05, rotate: 1 }}
-                    transition={{ type: 'spring', stiffness: 300 }}
+                    transition={{ type: "spring", stiffness: 300 }}
                     onClick={() => setDropdownOpen((prev) => !prev)}
-                    src={user.photoURL || '/profile.jpg'}
+                    src={user.photoURL || "/profile.jpg"}
                     alt="Profile"
                     className="w-8 h-8 rounded-full object-cover border border-gray-300 cursor-pointer"
                   />
@@ -127,7 +140,7 @@ export default function Navbar() {
                           <FiUser className="mr-2" /> Profile
                         </Link>
                         <Link
-                          href="/orders"
+                          href="/my-orders"
                           onClick={() => setDropdownOpen(false)}
                           className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         >
@@ -145,12 +158,13 @@ export default function Navbar() {
                 </div>
               ) : (
                 <Link href="/login">
-                  <button className="text-sm font-medium hover:text-[#004744] transition">
-                    Login / Register
+                  <button
+                    className="bg-[#004744] text-white px-4 py-2 rounded-md hover:bg-[#003737] transition"
+                  >
+                    Login
                   </button>
                 </Link>
-              )
-            )}
+              ))}
 
             {/* Mobile Menu Button */}
             <div className="md:hidden">

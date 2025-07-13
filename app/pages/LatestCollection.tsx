@@ -1,5 +1,5 @@
 "use client";
-
+import Link from "next/link";
 import { motion } from "framer-motion";
 import React from "react";
 
@@ -41,14 +41,16 @@ export default function LatestCollection() {
             Explore our newest arrivals crafted with elegance and comfort in
             mind. Perfect pieces to elevate your home decor.
           </p>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 300 }}
-            className="bg-[#004744] text-white px-6 py-3 rounded-md hover:bg-[#003a38] transition font-semibold"
-          >
-            Shop Now
-          </motion.button>
+          <Link href="/shop" passHref>
+            <motion.a
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 300 }}
+              className="bg-[#004744] text-white px-6 py-3 rounded-md hover:bg-[#003a38] transition font-semibold inline-block cursor-pointer"
+            >
+              Shop Now
+            </motion.a>
+          </Link>
         </div>
 
         {/* Product cards wrapper */}

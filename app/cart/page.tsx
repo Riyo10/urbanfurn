@@ -39,7 +39,7 @@ export default function CartPage() {
             </div>
           ))}
           <div className="mt-6 text-right font-semibold text-lg">
-            Total: ${totalPrice.toLocaleString()}
+            Total: ₹{totalPrice.toLocaleString()}
           </div>
           <div className="mt-6 flex justify-end">
             <button
