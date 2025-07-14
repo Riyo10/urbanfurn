@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   AiOutlineMail,
@@ -8,8 +9,30 @@ import {
 } from 'react-icons/ai';
 
 export default function ContactUs() {
+  const [showPopup, setShowPopup] = useState(false);
+
+  useEffect(() => {
+    if (showPopup) {
+      const timer = setTimeout(() => {
+        setShowPopup(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showPopup]);
+
   return (
-    <section className="max-w-7xl mx-auto px-4 py-20 md:px-12 text-[#004744]">
+    <section className="max-w-7xl mx-auto px-4 py-20 md:px-12 text-[#004744] relative">
+      {/* ✅ Centered Floating Popup (no overlay) */}
+      {showPopup && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+          <div className="bg-white border border-gray-300 text-[#004744] px-6 py-4 rounded-lg shadow-xl text-center pointer-events-auto">
+            <h2 className="text-xl font-semibold mb-2">Message Sent!</h2>
+            <p>We'll get back to you soon.</p>
+          </div>
+        </div>
+      )}
+
+      {/* Heading */}
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -24,6 +47,7 @@ export default function ContactUs() {
         </p>
       </motion.div>
 
+      {/* Form and Details */}
       <div className="grid md:grid-cols-2 gap-12">
         {/* Contact Form */}
         <motion.form
@@ -34,7 +58,8 @@ export default function ContactUs() {
           className="space-y-6 bg-white p-8 rounded-lg shadow-md"
           onSubmit={(e) => {
             e.preventDefault();
-            alert('Message sent! (Form submission not implemented)');
+            setShowPopup(true);
+            e.target.reset(); // ✅ Clear form after submission
           }}
         >
           <div>
@@ -79,7 +104,6 @@ export default function ContactUs() {
             ></textarea>
           </div>
 
-          {/* Button aligned right */}
           <div className="flex justify-end">
             <button
               type="submit"
